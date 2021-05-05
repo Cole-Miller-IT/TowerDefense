@@ -5,7 +5,6 @@ from pygame.math import Vector2
 
 #My modules
 from Entity import Entity, Enemy, Player, FastEnemy
-from Commands import Command, addRebindKeyCommand
     
 class GameMode():
     def processInput(self):
@@ -209,6 +208,7 @@ class SettingsGameMode(MenuGameMode):
         self.mode = "Show" #Show, Selection, or Confirmation
         self.modeChange = ""
         self.newHotkeyFlag = None
+        self.saveHotkeysFlag = None
 
     def processInput(self):
         if self.mode == "Show":
@@ -240,7 +240,8 @@ class SettingsGameMode(MenuGameMode):
                         if len(self.gamestate.rebindList) > 0:
                             #Ask the User to confirm or discard changes
                             self.modeChange = "Con"
-                        #self.ui.showMenu() #move to confirmation processInput
+                        else:
+                            self.ui.showMenu()
 
         elif self.mode == "Selection":
             for event in pygame.event.get():
@@ -265,26 +266,24 @@ class SettingsGameMode(MenuGameMode):
                     self.ui.quitGame()
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
-                        pass
+                        #Discard changes
+                        self.gamestate.rebindList = []
+                        self.ui.showMenu()
+                    elif event.key == pygame.K_RETURN:
+                        #Save changes
+                        self.saveHotkeysFlag = True
+                        
 
     def update(self):
         if self.modeChange is not None:
             if self.modeChange == "Sh":
                 self.mode = "Show"
-            if self.modeChange == "Sel":
+            elif self.modeChange == "Sel":
                 self.mode = "Selection"
+            elif self.modeChange == "Con":
+                self.mode = "Confirmation"
 
         if self.mode == "Show":
-            '''if self.menuItem is not None:
-                try:
-                    #Execute the current menuitems Action lambda function
-                    self.menuItem['action']() 
-                    self.menuItem = None
-
-                    #change mode to show
-                except Exception as ex:
-                    print(ex)'''
-
             #Adjust indexOffset
             if self.indexOffsetIncrease == True:
                 self.indexOffset += 1
@@ -321,6 +320,23 @@ class SettingsGameMode(MenuGameMode):
                 #Change flags
                 self.modeChange = "Sh"
                 self.newHotkeyFlag = False
+
+        elif self.mode == "Confirmation":
+            if self.saveHotkeysFlag == True:
+                updatedHotkeysList = self.hotkeys.copy()
+        
+                for item in self.gamestate.rebindList:
+                    userInput = item["Key"]
+                    index = item["Index"]
+                    
+                    #Replace hotkey with new one
+                    updatedHotkeysList[index]["hotkey"] = userInput
+                
+                #Clear list
+                self.gamestate.rebindList = []
+                self.gamestate.hotkeys = updatedHotkeysList
+
+                self.ui.showMenu()
 
     def render(self): 
         paddingLeft = 20
@@ -366,7 +382,6 @@ class SettingsGameMode(MenuGameMode):
             return x
 
         if self.mode == "Show":
-
             # Initial y
             y = 50
 
@@ -438,4 +453,9 @@ class SettingsGameMode(MenuGameMode):
             self.gamestate.window.blit(surface, (x, y))
 
         elif self.mode == "Confirmation":
-            pass
+            y = 50
+
+            # Title
+            surface = self.font.render("Press enter to confirm, Esc to discard changes.", True, (200, 0, 0))
+            x = centerFontX(surface)
+            self.gamestate.window.blit(surface, (x, y))
