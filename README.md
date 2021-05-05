@@ -7,7 +7,7 @@ Date: May, 2021 - current date
 Goals:
 -Setup Python environment                                   COMPLETED
 -Structure game, and create the first window                COMPLETED
--Create the first enemy and the command class
+-Implement hotkeys and the command class
 
 
 #Commands to help configure VS Code with Python using a virtual environment

@@ -5,6 +5,7 @@ from pygame.math import Vector2
 
 #My modules
 from Entity import Entity, Enemy, Player, FastEnemy
+from Commands import Command, addRebindKeyCommand
     
 class GameMode():
     def processInput(self):
@@ -204,67 +205,122 @@ class SettingsGameMode(MenuGameMode):
 
         self.paddingBottom = 50
 
-    def processInput(self):
-        #Event handling 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                #Exit the loop
-                self.ui.quitGame()
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_w:
-                    if self.currentMenuItem > self.indexMin:
-                        self.moveMenu = 'up'
-                        #If the User's cursor is halfway up the screen and the index offset is not 0 lower offset
-                        if self.currentMenuItem < self.menuMiddle and self.indexOffset != 0:
-                            self.indexOffsetDecrease = True
-                        
-                elif event.key == pygame.K_s:
-                    if self.currentMenuItem < self.indexMax:
-                        self.moveMenu = 'down'
-			            #If the User's cursor is halfway down the screen and the display list will not exceed the hotkeys master list length
-                        if self.currentMenuItem > self.menuMiddle and (self.menuItemsDisplayed + self.indexOffset) <= self.hotkeysMaxLen:
-                            self.indexOffsetIncrease = True
-                           
-                elif event.key == pygame.K_RETURN:
-                    #Gets the current menuitems action
-                    self.menuItem = self.menuItems[self.currentMenuItem]
+        #Determines how to execute the 3 main functions processInput, update, and render
+        self.mode = "Show" #Show, Selection, or Confirmation
+        self.modeChange = ""
+        self.newHotkeyFlag = None
 
-                elif event.key == K_ESCAPE:
-                    self.ui.showMenu()
+    def processInput(self):
+        if self.mode == "Show":
+            #Event handling 
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    #Exit the loop
+                    self.ui.quitGame()
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_w:
+                        if self.currentMenuItem > self.indexMin:
+                            self.moveMenu = 'up'
+                            #If the User's cursor is halfway up the screen and the index offset is not 0 lower offset
+                            if self.currentMenuItem < self.menuMiddle and self.indexOffset != 0:
+                                self.indexOffsetDecrease = True
+                            
+                    elif event.key == pygame.K_s:
+                        if self.currentMenuItem < self.indexMax:
+                            self.moveMenu = 'down'
+                            #If the User's cursor is halfway down the screen and the display list will not exceed the hotkeys master list length
+                            if self.currentMenuItem > self.menuMiddle and (self.menuItemsDisplayed + self.indexOffset) <= self.hotkeysMaxLen:
+                                self.indexOffsetIncrease = True
+                            
+                    elif event.key == pygame.K_RETURN:
+                        #Get index, hotkey, and flag to change from show to selection
+                        self.modeChange = "Sel"
+
+                    elif event.key == K_ESCAPE:
+                        if len(self.gamestate.rebindList) > 0:
+                            #Ask the User to confirm or discard changes
+                            self.modeChange = "Con"
+                        #self.ui.showMenu() #move to confirmation processInput
+
+        elif self.mode == "Selection":
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.ui.quitGame()
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        self.ui.showSettings()
+                    
+                    #If the user has selected a new hotkey, store it
+                    else:
+                        try: 
+                            self.newHotkeyFlag = True
+                            self.newHotkey = chr(event.key)
+                        except Exception() as ex:
+                            print("Error rebinding key selection")
+                            self.ui.showSettings()
+        
+        elif self.mode == "Confirmation":
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.ui.quitGame()
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        pass
 
     def update(self):
-      #Add in update code from menugamemode
-        if self.menuItem is not None:
-            try:
-                #Execute the current menuitems Action lambda function
-                self.menuItem['action']() 
-                self.menuItem = None
-            except Exception as ex:
-                print(ex)
+        if self.modeChange is not None:
+            if self.modeChange == "Sh":
+                self.mode = "Show"
+            if self.modeChange == "Sel":
+                self.mode = "Selection"
 
-        #Adjust indexOffset
-        if self.indexOffsetIncrease == True:
-            self.indexOffset += 1
-            self.indexOffsetChanged = True
+        if self.mode == "Show":
+            '''if self.menuItem is not None:
+                try:
+                    #Execute the current menuitems Action lambda function
+                    self.menuItem['action']() 
+                    self.menuItem = None
 
-        elif self.indexOffsetDecrease == True:
-            self.indexOffset -= 1
-            self.indexOffsetChanged = True
+                    #change mode to show
+                except Exception as ex:
+                    print(ex)'''
 
-        #User selection moves up
-        #I check to make sure the index has not changed to prevent skipping a value. If the index 
-        # changes and we move the menuItem the result is changing two positions instead of one.
-        if self.moveMenu == 'up' and self.indexOffsetChanged != True:
-            self.currentMenuItem -= 1
+            #Adjust indexOffset
+            if self.indexOffsetIncrease == True:
+                self.indexOffset += 1
+                self.indexOffsetChanged = True
 
-        #User selection moves down
-        elif self.moveMenu == 'down' and self.indexOffsetChanged != True:
-            self.currentMenuItem += 1
+            elif self.indexOffsetDecrease == True:
+                self.indexOffset -= 1
+                self.indexOffsetChanged = True
 
-        #Clear values
-        self.moveMenu = None
-        self.indexOffsetIncrease = None
-        self.indexOffsetDecrease = None
+            #User selection moves up
+            #I check to make sure the index has not changed to prevent skipping a value. If the index 
+            # changes and we move the menuItem the result is changing two positions instead of one.
+            if self.moveMenu == 'up' and self.indexOffsetChanged != True:
+                self.currentMenuItem -= 1
+
+            #User selection moves down
+            elif self.moveMenu == 'down' and self.indexOffsetChanged != True:
+                self.currentMenuItem += 1
+
+            #Clear values
+            self.moveMenu = None
+            self.indexOffsetIncrease = None
+            self.indexOffsetDecrease = None
+
+        elif self.mode == "Selection":
+            if self.newHotkeyFlag == True:
+                #Take User's input (key) and current index of hotkeys list
+                Input = {"Index": self.cursorIndex, "Key": self.newHotkey}
+
+		        #Store inputs
+                self.gamestate.rebindList.append(Input)
+                print(self.gamestate.rebindList)
+
+                #Change flags
+                self.modeChange = "Sh"
+                self.newHotkeyFlag = False
 
     def render(self): 
         paddingLeft = 20
@@ -309,52 +365,77 @@ class SettingsGameMode(MenuGameMode):
 
             return x
 
-        # Initial y
-        y = 50
+        if self.mode == "Show":
 
-        #Amount of pixels to space out text from the edges of the window
-        padding = 20
+            # Initial y
+            y = 50
 
-        # Title
-        surface = self.font.render(self.menuName, True, (200, 0, 0))
-        x = centerFontX(surface)
-        self.gamestate.window.blit(surface, (x, y))
+            #Amount of pixels to space out text from the edges of the window
+            padding = 20
 
-        y += (200 * surface.get_height()) // 100  #Change the y-pos to draw the menu items
+            # Title
+            surface = self.font.render(self.menuName, True, (200, 0, 0))
+            x = centerFontX(surface)
+            self.gamestate.window.blit(surface, (x, y))
 
-        #If this is the first iteration or the screen size has been changed, recreate the list 
-        if self.menuItemsDisplayedChanged == None or self.menuItemsDisplayedChanged == True:
-            self.menuItemsDisplayed = itemsDisplayed(y)
-            self.menuMiddle = round(self.menuItemsDisplayed / 2)
-            self.menuItemsDisplayedChanged = False
+            y += (200 * surface.get_height()) // 100  #Change the y-pos to draw the menu items
 
-	    #If this is the first iteration or the index offset has been changed, recreate the list 
-        if self.indexOffsetChanged == None or self.indexOffsetChanged == True:
-            self.menuItems = createDisplayList()
-            self.indexMax = (len(self.menuItems) - 1)
-            self.indexOffsetChanged = False
+            #If this is the first iteration or the screen size has been changed, recreate the list 
+            if self.menuItemsDisplayedChanged == None or self.menuItemsDisplayedChanged == True:
+                self.menuItemsDisplayed = itemsDisplayed(y)
+                self.menuMiddle = round(self.menuItemsDisplayed / 2)
+                self.menuItemsDisplayedChanged = False
 
-        #Render list
-        for item in self.menuItems:         
-            #Draw each menuItem to the screen
-            surface = self.font.render(item['menuItemName'], True, (200, 0, 0))
+            #If this is the first iteration or the index offset has been changed, recreate the list 
+            if self.indexOffsetChanged == None or self.indexOffsetChanged == True:
+                self.menuItems = createDisplayList()
+                self.indexMax = (len(self.menuItems) - 1)
+                self.indexOffsetChanged = False
+
+            #Render list
+            for item in self.menuItems:         
+                #Draw each menuItem to the screen
+                surface = self.font.render(item['menuItemName'], True, (200, 0, 0))
+                x = paddingLeft
+                self.gamestate.window.blit(surface, (x, y))
+
+                #Draw each hotkey to the screen
+                surface = self.font.render(item['hotkey'], True, (200, 0, 0))
+                x = paddingRight
+                self.gamestate.window.blit(surface, (x, y))
+                
+                #Cursor
+                index = self.menuItems.index(item)
+
+                #Render the cursor at the current MenuItem selected
+                if index == self.currentMenuItem:
+                    surface = self.menuCursor.render("-->", True, (200, 0, 0))
+                    cursorX = x - (surface.get_width() + 10) 
+                    cursorY = y
+                    self.gamestate.window.blit(surface, (cursorX, cursorY))
+                    self.cursorIndex = index + self.indexOffset
+
+                #Update y-pos so items are not overlaping
+                y += updateHeight(surface)
+
+        elif self.mode == "Selection":
+            y = 50
+
+            # Title
+            surface = self.font.render("Select new hotkey, Esc to cancel.", True, (200, 0, 0))
+            x = centerFontX(surface)
+            self.gamestate.window.blit(surface, (x, y))
+
+            y += (200 * surface.get_height()) // 100
+
+            #Draw current selected menuItem
+            surface = self.font.render(self.menuItems[self.currentMenuItem]['menuItemName'], True, (200, 0, 0))
             x = paddingLeft
             self.gamestate.window.blit(surface, (x, y))
 
-            #Draw each hotkey to the screen
-            surface = self.font.render(item['hotkey'], True, (200, 0, 0))
+            surface = self.font.render(self.menuItems[self.currentMenuItem]['hotkey'], True, (200, 0, 0))
             x = paddingRight
             self.gamestate.window.blit(surface, (x, y))
-            
-            #Cursor
-            index = self.menuItems.index(item)
 
-            #Render the cursor at the current MenuItem selected
-            if index == self.currentMenuItem:
-                surface = self.menuCursor.render("-->", True, (200, 0, 0))
-                cursorX = x - (surface.get_width() + 10) 
-                cursorY = y
-                self.gamestate.window.blit(surface, (cursorX, cursorY))
-
-            #Update y-pos so items are not overlaping
-            y += updateHeight(surface)
+        elif self.mode == "Confirmation":
+            pass

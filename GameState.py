@@ -18,7 +18,7 @@ class GameState():
 
         #FPS
         self.clock = pygame.time.Clock()
-        self.FPS = 30
+        self.FPS = 15
 
         #Game loop condition
         self.running = True
@@ -32,6 +32,9 @@ class GameState():
 
         #Enemies
         self.enemies = []
+
+        #Settings
+        self.rebindList = []
 
         #List of all keybinds
         self.hotkeys = [
