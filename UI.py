@@ -10,7 +10,7 @@ try:
     from Entity import Entity, Enemy, Player, FastEnemy
     from GameModes import MenuGameMode, PlayGameMode, MessageGameMode, SettingsGameMode
     from GameState import GameState
-    from Layers import Layer, EntityLayer
+    from Layers import Layer, ArrayLayer
 
 except ImportError as error:
     print("Couldn't load module.")
@@ -26,7 +26,9 @@ class UserInterface():
         self.gamestate = GameState()
 
         #Layers
-        self.layers = []
+        self.layers = [
+            ArrayLayer('Assets\ground.png', self.gamestate.ground, self.gamestate)
+        ]
 
         #Init Pygame
         pygame.init()

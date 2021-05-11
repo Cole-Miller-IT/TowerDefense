@@ -5,6 +5,7 @@ from pygame.math import Vector2
 
 #My modules
 from Entity import Entity, Enemy, Player, FastEnemy
+from Layers import Layer, ArrayLayer
     
 class GameMode():
     def processInput(self):
@@ -123,13 +124,12 @@ class PlayGameMode(GameMode):
         self.ui = UI
         self.gamestate = UI.gamestate
 
-
     def processInput(self):
         # Event Handler
         for event in pygame.event.get():
             # If the user has clicked on the 'X' box, close the game
             if event.type == pygame.QUIT:
-                self.running = False
+                self.gamestate.running = False
             # If the user has pressed down on the keyboard, handle the input
             elif event.type == pygame.KEYDOWN:
                 if event.key == K_ESCAPE:
@@ -140,12 +140,13 @@ class PlayGameMode(GameMode):
                 pass
 
     def update(self):
-        if len(self.gamestate.enemies) < 1:
+        '''if len(self.gamestate.enemies) < 1:
             #Create a new enemy
-            self.gamestate.enemies.append(Enemy(self.gamestate.cellSize))
+            self.gamestate.enemies.append(Enemy(self.gamestate.cellSize))'''
+        pass
 
     def render(self):
-        for layer in self.gamestate.layers:
+        for layer in self.ui.layers:
             layer.render()
 
         
@@ -337,7 +338,7 @@ class SettingsGameMode(MenuGameMode):
                 self.gamestate.hotkeys = updatedHotkeysList
 
                 self.ui.showMenu()
-
+    
     def render(self): 
         paddingLeft = 20
         paddingRight = 500

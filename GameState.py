@@ -33,6 +33,21 @@ class GameState():
         #Enemies
         self.enemies = []
 
+        #Contains positions of all ground tiles
+        self.ground = [
+            [Vector2(0,0), Vector2(0,0), Vector2(0,0), Vector2(0,0), Vector2(0,0), None, None, None, None, None, None, None], 
+            [None, None, None, None, None, None, None, None, None, None, None, None],
+            [None, None, None, None, None, None, None, None, None, None, None, None],
+            [None, None, None, None, None, None, None, None, None, None, None, None], 
+            [None, None, None, None, None, None, None, None, None, None, None, None],
+            [None, None, None, None, None, None, None, None, None, None, None, None],
+            [None, None, None, None, None, None, None, None, None, None, None, None], 
+            [None, None, None, None, None, None, None, None, None, None, None, None],
+            [None, None, None, None, None, None, None, None, None, None, None, None],
+            [None, None, None, None, None, None, None, None, None, None, None, None],
+            ]
+    
+
         #Settings
         self.rebindList = []
 
