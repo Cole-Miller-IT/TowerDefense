@@ -12,7 +12,10 @@ Goals:
 -Implement re-bindable hotkeys                              COMPLETED
 -Add hotkeys to the play gamemode class                     
 -Clean up settingsMenuGamemode class
+-Clean up UI/Array Layer, make more concise 
 -Draw BackGround layer to the playgamemode                  COMPLETED
+-Add the enemy                                              COMPLETED
+-Clean up renderUnit method of the layer class
 
 #Commands to help configure VS Code with Python using a virtual environment
 First, run the command below in the terminal window to create a python virtual environment

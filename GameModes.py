@@ -4,7 +4,7 @@ from pygame.locals import *
 from pygame.math import Vector2
 
 #My modules
-from Entity import Entity, Enemy, Player, FastEnemy
+import Entity
 from Layers import Layer, ArrayLayer
     
 class GameMode():
@@ -140,10 +140,15 @@ class PlayGameMode(GameMode):
                 pass
 
     def update(self):
-        '''if len(self.gamestate.enemies) < 1:
+        if len(self.gamestate.enemies) < 1:
             #Create a new enemy
-            self.gamestate.enemies.append(Enemy(self.gamestate.cellSize))'''
-        pass
+            position = Vector2(64, 64)
+            self.gamestate.enemies.append(Entity.Unit(self.gamestate, position))
+            
+            print(self.gamestate.enemies)
+
+        for enemy in self.gamestate.enemies:
+            enemy.update()
 
     def render(self):
         for layer in self.ui.layers:

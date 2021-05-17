@@ -1,4 +1,7 @@
 #Import Modules
+from Layers import UnitLayer
+
+
 try:
     import pygame
     from pygame.locals import *
@@ -7,10 +10,10 @@ try:
     import sys
 
     #My modules
-    from Entity import Entity, Enemy, Player, FastEnemy
+    from Entity import Entity
     from GameModes import MenuGameMode, PlayGameMode, MessageGameMode, SettingsGameMode
     from GameState import GameState
-    from Layers import Layer, ArrayLayer
+    import Layers
 
 except ImportError as error:
     print("Couldn't load module.")
@@ -27,7 +30,8 @@ class UserInterface():
 
         #Layers
         self.layers = [
-            ArrayLayer('Assets\ground.png', self.gamestate.ground, self.gamestate)
+            Layers.ArrayLayer('Assets\ground.png', self.gamestate.ground, self.gamestate),
+            Layers.UnitLayer('Assets\enemy.png', self.gamestate.enemies, self.gamestate)
         ]
 
         #Init Pygame

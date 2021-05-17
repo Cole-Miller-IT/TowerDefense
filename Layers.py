@@ -24,6 +24,17 @@ class Layer():
 	    
 	    #Draw tile to the pygame surface
 	    window.blit(self.texture, tilePos, textureSurface)
+
+	def renderUnit(self, pos, tile, gamestate):
+		cellSize = gamestate.cellSize
+		window = gamestate.window
+	    
+	    #Texture
+		textureOrigin = tile.elementwise() * cellSize
+		textureSurface = Rect(int(textureOrigin.x), int(textureOrigin.y), cellSize.x, cellSize.y)
+	    
+	    #Draw tile to the pygame surface
+		window.blit(self.texture, pos, textureSurface)
     
 class ArrayLayer(Layer):
     def __init__(self, textureFile, array, gamestate):
@@ -39,3 +50,15 @@ class ArrayLayer(Layer):
                 tilePosition = Vector2(x, y)
                 if tile is not None:
                     self.renderTile(tilePosition, tile, self.gamestate)
+
+
+class UnitLayer(Layer):
+	def __init__(self, textureFile, array, gamestate):
+		super().__init__(textureFile)
+		self.array = array
+		self.gamestate = gamestate
+    
+    #Renders all units
+	def render(self):
+		for unit in self.array:
+			self.renderUnit(unit.pos, unit.tile, self.gamestate)
