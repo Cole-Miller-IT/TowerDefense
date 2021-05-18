@@ -1,7 +1,4 @@
 #Import Modules
-from Layers import UnitLayer
-
-
 try:
     import pygame
     from pygame.locals import *
@@ -31,13 +28,15 @@ class UserInterface():
         #Layers
         self.layers = [
             Layers.ArrayLayer('Assets\ground.png', self.gamestate.ground, self.gamestate),
-            Layers.UnitLayer('Assets\enemy.png', self.gamestate.enemies, self.gamestate)
+            Layers.UnitLayer('Assets\\units.png', self.gamestate.enemies, self.gamestate.window),
+            Layers.HUDLayer('Assets\ground.png', self.gamestate)
         ]
 
         #Init Pygame
         pygame.init()
         pygame.font.init()
         pygame.display.set_caption(self.gamestate.windowCaption)
+        
     def showLevel(self):
         #Init gameplay
         if self.currentGameMode is None:
@@ -100,7 +99,7 @@ class UserInterface():
                         self.activeGameMode = 'Overlay'
 
             #Render 
-            #Draw a black screen
+            #Draw a black screen (clear the screen)
             self.gamestate.window.fill((0, 0, 0))
 
             #Render the play game mode if set

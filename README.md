@@ -5,17 +5,25 @@ Author: Cole Miller
 Date: May, 2021 - current date
 Help/Resources used: 
 https://www.patternsgameprog.com/series/                    #Big help with structuring the game 
+https://www.pygame.org/docs/								#Documentation for the pygame module
+https://www.w3schools.com/python/							#Useful python tutorials 
 
 Goals:
 -Setup Python environment                                   COMPLETED
 -Structure game, and create the first window                COMPLETED
--Implement re-bindable hotkeys                              COMPLETED
+-Implement re-bindable hotkeys menu                        	COMPLETED
 -Add hotkeys to the play gamemode class                     
 -Clean up settingsMenuGamemode class
--Clean up UI/Array Layer, make more concise 
+-Clean up UI/Array Layer, make more concise 				COMPLETED
 -Draw BackGround layer to the playgamemode                  COMPLETED
 -Add the enemy                                              COMPLETED
--Clean up renderUnit method of the layer class
+-Clean up renderUnit method of the layer class				COMPLETED
+-Implement MessageGameMode
+-Create the HUD layer
+-Create a spritesheet for the ground with roads
+-Move hotkeys list to a txt file to save data 				
+
+
 
 #Commands to help configure VS Code with Python using a virtual environment
 First, run the command below in the terminal window to create a python virtual environment
@@ -32,6 +40,6 @@ py -m pip install pygame
 
 
 Troubleshooting:
-Incase you recieve a error related to this problem use this in Powershell.
-"terminal.integrated.shellArgs.windows": ["-ExecutionPolicy", "Bypass"]  #Used to allow 
+Incase you recieve a error related to this problem, run this in Powershell.
+"terminal.integrated.shellArgs.windows": ["-ExecutionPolicy", "Bypass"]  
 '''

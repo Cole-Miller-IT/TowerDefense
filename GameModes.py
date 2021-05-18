@@ -28,7 +28,7 @@ class MenuGameMode(GameMode):
         self.fontSize = 40
         self.font = pygame.font.SysFont('rubik', self.fontSize)
         
-        #Create a list, each item of the list is a dict[] of all levels and a quit option
+        #Create a list that contains all the menu options the user can choose from
         self.menuItems = [
             {
                 'menuItemName': 'Tutorial Instructions',
@@ -94,8 +94,9 @@ class MenuGameMode(GameMode):
         surface = self.font.render(self.menuName, True, (200, 0, 0))
         x = centerFontX(surface)
         self.gamestate.window.blit(surface, (x, y))
-
-        y += (200 * surface.get_height()) // 100  #Change the y-pos to draw the menu items
+        
+        #Move down the y-pos to draw the menu items below the title
+        y += (200 * surface.get_height()) // 100  
         
         #Iterate through each menuItem
         for item in self.menuItems:
@@ -143,8 +144,9 @@ class PlayGameMode(GameMode):
         if len(self.gamestate.enemies) < 1:
             #Create a new enemy
             position = Vector2(64, 64)
-            self.gamestate.enemies.append(Entity.Unit(self.gamestate, position))
-            
+            self.gamestate.enemies.append(Entity.Unit(position))
+                
+            #debug, remove later
             print(self.gamestate.enemies)
 
         for enemy in self.gamestate.enemies:
@@ -162,7 +164,7 @@ class MessageGameMode(GameMode):
 
         self.fontSize = 24
         self.font = pygame.font.SysFont('rubik', self.fontSize)
-        self.message = "Click on the falling rectangles to destroy them and gain points."
+        self.message = "You suck."
 
         self.returnToMenu = False
      

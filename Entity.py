@@ -1,6 +1,5 @@
 import pygame
 import random
-from pygame.draw import rect
 from pygame.locals import *
 from pygame.math import Vector2
 
@@ -20,14 +19,14 @@ class Entity():
         pass
 
 class Unit(Entity):
-    def __init__(self, gamestate, position):
+    def __init__(self, position):
         super().__init__(position)
-        self.gamestate = gamestate
         self.pos = position
         self.movespeed = 0
+        self.size = Vector2(32, 32)
         
-        #
-        self.tile = Vector2(0, 0)
+        #Contains the location of the sprite texture in the spritesheet
+        self.textureOrigin = Vector2(0, 0)
 
     def processInput(self):
         pass
@@ -42,7 +41,8 @@ class Player(Entity):
         pass
 
     def processInput(self):
-        self.clickPos = Vector2(pygame.mouse.get_pos())
+        #self.clickPos = Vector2(pygame.mouse.get_pos())
+        pass
 
     def update(self, points):
         pass
