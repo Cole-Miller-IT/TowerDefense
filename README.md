@@ -42,4 +42,6 @@ py -m pip install pygame
 Troubleshooting:
 Incase you recieve a error related to this problem, run this in Powershell.
 "terminal.integrated.shellArgs.windows": ["-ExecutionPolicy", "Bypass"]  
+
+If pylance throws up an error Unident not matching or inconsistent use of tabs . Fix: ctrl + A all the code, right click, and select format document. Lord help me with it being a tab vs. 4 spaces.
 '''

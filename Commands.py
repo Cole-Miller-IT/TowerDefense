@@ -1,18 +1,33 @@
-import pygame
-import random
-from pygame.locals import *
-from pygame.math import Vector2
-
-#My modules
-from GameState import GameState
-
 class Command():
     def __init__(self):
         pass
 
     def run(self):
-        pass	
+        raise NotImplementedError()
 
+class MoveCommand():
+    def __init__(self, unit, move, gamestate):
+        self.unit = unit
+        self.gs = gamestate
+        self.newPos = self.unit.pos + move  # Potential new position
+
+    def run(self):
+        # Check if the unit would go beyond the world bounds
+        if self.newPos.x < 0 or self.newPos.x > self.gs.windowSize.x \
+                or self.newPos.y < 0 or self.newPos.y > self.gs.windowSize.y:
+            # Unit out of world bounds
+            return
+
+        # Check if the position is occupied by another unit
+        for other in self.gs.units:
+            if self.newPos == other.pos:
+                return
+
+        # Passed all checks, update position
+        self.unit.pos = self.newPos
+
+
+'''
 class RebindKeysCommand(Command):
 	def __init__(self, hotkeyList, rebindList):
 		updatedHotkeysList = hotkeyList.copy()
@@ -30,4 +45,4 @@ class RebindKeysCommand(Command):
 		rebindList = []	
 		
 		#This returns the values as a tuple
-		return updatedHotkeysList, rebindList
+		return updatedHotkeysList, rebindList'''

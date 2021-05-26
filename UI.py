@@ -28,7 +28,7 @@ class UserInterface():
         #Layers
         self.layers = [
             Layers.ArrayLayer('Assets\ground.png', self.gamestate.ground, self.gamestate),
-            Layers.UnitLayer('Assets\\units.png', self.gamestate.enemies, self.gamestate.window),
+            Layers.UnitLayer('Assets\\units.png', self.gamestate.units, self.gamestate.window),
             Layers.HUDLayer('Assets\ground.png', self.gamestate)
         ]
 

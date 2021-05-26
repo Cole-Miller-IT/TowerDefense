@@ -6,6 +6,7 @@ from pygame.math import Vector2
 #My modules
 import Entity
 from Layers import Layer, ArrayLayer
+import Commands
     
 class GameMode():
     def processInput(self):
@@ -141,16 +142,17 @@ class PlayGameMode(GameMode):
                 pass
 
     def update(self):
-        if len(self.gamestate.enemies) < 1:
+        if len(self.gamestate.units) < 1:
             #Create a new enemy
             position = Vector2(64, 64)
-            self.gamestate.enemies.append(Entity.Unit(position))
-                
-            #debug, remove later
-            print(self.gamestate.enemies)
+            self.gamestate.units.append(Entity.Unit(position))
 
-        for enemy in self.gamestate.enemies:
+        for enemy in self.gamestate.units:
+            #Commands.MoveCommand(enemy, enemy.move, self.gamestate).run()
+
+            #Testing angles
             enemy.update()
+            #enemy.computeAngleDeg(200, 200)#-------
 
     def render(self):
         for layer in self.ui.layers:

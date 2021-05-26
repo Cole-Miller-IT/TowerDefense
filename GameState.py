@@ -18,7 +18,7 @@ class GameState():
 
         #FPS
         self.clock = pygame.time.Clock()
-        self.FPS = 15
+        self.FPS = 30
 
         #Game loop condition
         self.running = True
@@ -31,7 +31,9 @@ class GameState():
         self.windowCaption = 'Tower Defense'
 
         #Enemies
-        self.enemies = []
+        self.units = []
+
+        self.commands = []
 
         #Contains positions of all ground tiles
         self.ground = [
