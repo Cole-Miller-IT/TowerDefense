@@ -63,11 +63,6 @@ class UserInterface():
 
     def quitGame(self): 
         self.gamestate.running = False
-        
-    def showFPS(self):
-        #Draw font/text
-        self.fontSurface = self.font.render("FPS: " + str(int(self.ui.clock.get_fps())), True, self.ui.white)  #Convert clock from a float to a int to round off decimal points
-        self.ui.window.blit(self.fontSurface, (20, 20))
 
     def run(self, UI):
         #Set default gamemode to the menu

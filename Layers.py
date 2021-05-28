@@ -20,20 +20,7 @@ class Layer():
         # Rotate the tile
         rotatedTile = pygame.transform.rotate(tile, angle)
 
-        #
-        new_rect = rotatedTile.get_rect(center=tile.get_rect(center=(int(position.x), int(position.y))).center)
-
-        '''# A new position to draw the sprite must now be computed,
-        # this is because when the tile is rotated the width/height changes slighty.
-        # https://www.patternsgameprog.com/discover-python-and-patterns-19-mouse/ for reference
-        rotatedPosition = Vector2()
-        shift = Vector2(rotatedTile.get_width() - tile.get_width(), rotatedTile.get_height() - tile.get_height())
-
-        # The reason we subtract the shift is because of the way pygame coordinates work, to center this now bigger
-        # image we must subtract the shift from the x and y position to align the center of the new rotated image
-        # to the old non-rotated image by moving up the previous position coordinates
-        rotatedPosition.x = int(position.x) - int(shift.x)
-        rotatedPosition.y = int(position.y) - int(shift.y)'''
+        new_rect = rotatedTile.get_rect(center=position)
 
         return (rotatedTile, new_rect)
 
