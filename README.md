@@ -7,6 +7,8 @@ Help/Resources used:
 https://www.patternsgameprog.com/series/                    #Big help with structuring the game 
 https://www.pygame.org/docs/								#Documentation for the pygame module
 https://www.w3schools.com/python/							#Useful python tutorials 
+https://stackoverflow.com/questions/4183208/how-do-i-rotate-an-image-around-its-center-using-pygame  #Debugging surface rotation
+https://www.reddit.com/r/pygame/comments/49n8dy/why_out_of_memory/                                   #Debugging surface rotation
 
 Goals:
 -Setup Python environment                                   COMPLETED
@@ -21,7 +23,12 @@ Goals:
 -Implement MessageGameMode
 -Create the HUD layer
 -Create a spritesheet for the ground with roads
--Move hotkeys list to a txt file to save data 				
+-Create a spritesheet for units                             COMPLETED
+-Move hotkeys list to a txt file to save data 			
+-Implement entity Component system/overhaul existing 
+ OOP class structure
+ -Add texture rotation                                      COMPLETED
+ -Implement Targeting system
 
 
 

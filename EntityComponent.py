@@ -125,13 +125,8 @@ class TextureObject():
         self.angle = 0
         self.origin = origin
         self.originRect = None
+        self.Rect = None
         self.surface = None
-
-    def update(self):
-        #update angle
-        pass
-        #update surface
-
 
 class TextureComponent(Component):
     def __init__(self, textureFile, textureOriginList):
@@ -142,11 +137,12 @@ class TextureComponent(Component):
         # Origin points for chosing the correct texture(s)
         self.textureOriginList = textureOriginList
         self.textureSurfaceList = []
-        self.textures = []
+        self.textureObjects = []
 
+        #For every origin point/every texture create a texture object and store it in a list
         for origin in self.textureOriginList:
             textureObject = TextureObject(origin)
-            self.textures.append(textureObject)
+            self.textureObjects.append(textureObject)
 
     #Creates a list of surfaces/textures that can be rendered to create the visible entity on the screen
     def prepareSurfaces(self, entity):
@@ -154,39 +150,34 @@ class TextureComponent(Component):
         height = entity.components["SizeComponent"].height
         posX = entity.components["PositionComponent"].x
         posY = entity.components["PositionComponent"].y
-        rotatedSurface = None
-
-        entity.components["TextureComponent"].textureSurfaceList.clear()
 
         #For every texture create a surface
-        for texture in self.textures:
+        for texture in entity.components["TextureComponent"].textureObjects:
             #This Rect holds the values to choose the correct texture from the spritesheet
-            self.originRect = pygame.Rect(texture.origin.x, texture.origin.y, width, height)
+            texture.originRect = pygame.Rect(texture.origin.x, texture.origin.y, width, height)
             texture.surface = pygame.Surface((width, height), pygame.SRCALPHA)
 
             #Blits the spritesheet onto the Surface at point (0,0). originRect controls what part 
             # of the spritesheet is choosen to blit to the surface
-            texture.surface.blit(self.spritesheet, (0, 0), self.originRect)
+            texture.surface.blit(self.spritesheet, (0, 0), texture.originRect)
+
+            #Create a copy of the surface
+            originalTextureSurface = texture.surface.copy()
+
+            #Create a Rect() that holds the current texture's position
+            texture.Rect = pygame.Rect(posX, posY, width, height)
 
             #Check if the texture should be rotated
             if texture.angle != 0:
-                rotatedSurface, newPosRect = self.rotateSurface(texture.surface, width, height, texture.angle, texture, self.originRect, posX, posY)
-                entity.components["TextureComponent"].textureSurfaceList.append(rotatedSurface)
+                #Rotate surface
+                texture.surface, texture.Rect = self.rotateSurface(originalTextureSurface, texture.angle, texture.Rect)
 
-            else:
-                entity.components["TextureComponent"].textureSurfaceList.append(texture.surface)
+    def rotateSurface(self, surface, angle, rect):
+        rotated_image = pygame.transform.rotate(surface, angle)
 
-    def rotateSurface(self, surface, width, height, angle, texture, textureRect, x, y):
-        # Create a pygame surface, then blit the tile/units texture onto the surface at origin (0,0)
-        tempSurface = pygame.Surface((width, height), pygame.SRCALPHA)
-        tempSurface.blit(surface, (0, 0), textureRect)
+        new_rect = rotated_image.get_rect(center=rect.center)
 
-        # Rotate the tile
-        rotatedSurface = pygame.transform.rotate(tempSurface, angle)
-
-        newPosRect = rotatedSurface.get_rect(center=(x, y))
-
-        return (rotatedSurface, newPosRect)
+        return rotated_image, new_rect
 
     def run(self):
         pass
@@ -231,11 +222,9 @@ class RenderSystem(System):
 
     #Draw the entity on the screen
     def render(self, window, entity):
-        for surface in entity.components["TextureComponent"].textureSurfaceList:
+        for textureObject in entity.components["TextureComponent"].textureObjects:
             #Draw tile surface to the window surface
-            x = entity.components["PositionComponent"].x
-            y = entity.components["PositionComponent"].y
-            window.blit(surface, (x, y))
+            window.blit(textureObject.surface, textureObject.Rect)
 
     def run(self):
         pass
@@ -281,10 +270,10 @@ running = True
 
 EM = EntityManager()
 e1 = Entity(EM, [PositionComponent(200, 200), TargetComponent(), ShootComponent(), SizeComponent(
-    64, 64), TextureComponent("Assets\ground.png", [Vector2(0, 0), Vector2(300, 300)]), RenderComponent()])
+    32, 32), TextureComponent("Assets\spritesheet.png", [Vector2(0, 0), Vector2(32, 0)]), RenderComponent()])
 
-e2 = Entity(EM, [PositionComponent(200, 200), TargetComponent(), ShootComponent(), SizeComponent(
-    64, 64), TextureComponent("Assets\ground.png", [Vector2(0, 0), Vector2(124, 100)]), RenderComponent()])
+#e2 = Entity(EM, [PositionComponent(200, 200), TargetComponent(), ShootComponent(), SizeComponent(
+   # 64, 64), TextureComponent("Assets\ground.png", [Vector2(0, 0), Vector2(124, 100)]), RenderComponent()])
 
 RS = RenderSystem(EM)
 
@@ -299,27 +288,17 @@ while running:
         elif event.type == pygame.KEYDOWN:
             pass
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            counter = counter + 1
-            
+            counter = counter + 20
         else:
             pass
     
-    window.fill((0, 0, 0))
-
+    window.fill((255, 255, 255))
 
     if counter < 360:
-        e1.components["TextureComponent"].textures[0].angle = counter
+        e1.components["TextureComponent"].textureObjects[1].angle = counter
         e1.components["TextureComponent"].prepareSurfaces(e1)
-        #counter = counter + 1
-
-    print(e1.components["TextureComponent"].textureSurfaceList)
-    print(e1.components["TextureComponent"].textures)
-    print(counter)
-    print("---------------------------")
 
     RS.render(window, e1)
-
-
 
     pygame.display.update()
 
