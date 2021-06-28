@@ -1,12 +1,19 @@
-import pygame
-import random
-from pygame.locals import *
-from pygame.math import Vector2
-
-#My modules
-import Entity
-from Layers import Layer, ArrayLayer
-import Commands
+#Import Modules
+try:
+    import sys
+    import pygame
+    import random
+    from pygame.locals import *
+    from pygame.math import Vector2
+    
+    #My modules
+    import entitysystems as Esys
+    from entitycomponent import *
+    
+except ImportError as er:
+    print("Error loading module")
+    print(er)
+    sys.exit(2)
     
 class GameMode():
     def processInput(self):
@@ -120,53 +127,104 @@ class MenuGameMode(GameMode):
             #Update y-pos so items are not overlaping
             y += (120 * surface.get_height()) // 100  
 
-#---------------------------------------------------------------------------------------
 class PlayGameMode(GameMode):
     def __init__(self, UI):
-        self.ui = UI
-        self.gamestate = UI.gamestate
+        super().__init__()  #Inherit all the properties and methods of the parent class
+        self.UI = UI
+        self.gs = UI.gamestate
+        self.EM = EntityManager()
+        self.RS = Esys.RenderSystem(self.EM, self.gs)
+        self.MS = Esys.MovementSystem(self.EM, self.gs)
+        self.TextureSys = Esys.TextureSystem(self.EM, self.gs)
+        self.TarSys = Esys.TargetSystem(self.EM)
+        
+        #Testing variables-----------------------------------------------
+        self.counterChange = False
+        #layer = self.RS.create2DLayer(self.gs.ground, "Assets\Ground.png")
+        #self.RS.layers.append(layer)
+        
+        
+        self.player1 = Entity(self.EM, [PositionComponent(200, 200), TargetComponent(), ShootComponent(), SizeComponent(
+            32, 32), TextureComponent("Assets\\Units.png", {"base": Vector2(32, 0), "turret": Vector2(64, 0)}), RenderComponent(), MoveComponent(Vector2(0, 0))])
+
+        unitLayer = []
+        unitLayer.append(self.player1)
+        self.RS.layers.append(unitLayer)
+        
+        #Observers
+        #textureObjEvent = observers.Event()
+        #textureObjObserver = observers.textureObserver()
+        #------------------------------------------------------------------------------
 
     def processInput(self):
-        # Event Handler
         for event in pygame.event.get():
             # If the user has clicked on the 'X' box, close the game
             if event.type == pygame.QUIT:
-                self.gamestate.running = False
+                self.running = False
             # If the user has pressed down on the keyboard, handle the input
             elif event.type == pygame.KEYDOWN:
-                if event.key == K_ESCAPE:
-                    self.ui.showMenu()
+                #Move up
+                if event.key == pygame.K_w:
+                    self.player1.components["MoveComponent"].move = Vector2(0, -10)
+                #Move left
+                elif event.key == pygame.K_a:
+                    self.player1.components["MoveComponent"].move = Vector2(-10, 0)
+                #Move down
+                elif event.key == pygame.K_s:
+                    self.player1.components["MoveComponent"].move = Vector2(0, 10)
+                #Move right
+                elif event.key == pygame.K_d:
+                    self.player1.components["MoveComponent"].move = Vector2(10, 0)
+
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                pass #self.player1.processInput()  #Store the mouse click position
+                #Targets the point clicked on and updates textureObject's turret angle
+                target = pygame.mouse.get_pos()
+                #
+                updated = self.TarSys.turretTarget(self.player1, target)
+                if updated:
+                    self.TextureSys.updateList.append(self.player1)
             else:
                 pass
 
     def update(self):
-        if len(self.gamestate.units) < 1:
-            #Create a new enemy
-            position = Vector2(64, 64)
-            self.gamestate.units.append(Entity.Unit(position))
-
-        for enemy in self.gamestate.units:
-            #Commands.MoveCommand(enemy, enemy.move, self.gamestate).run()
-
-            #Testing angles
-            enemy.update()
-            #enemy.computeAngleDeg(200, 200)#-------
-
+        #Move player
+        #self.MS.move(self.player1)
+            
+        #Initalize textureObjects for new entities
+        if self.EM.texturedEntitiesNotPrepared:
+            for entity in self.EM.texturedEntitiesNotPrepared:
+                for textureObj in entity.components["TextureComponent"].textureObjects:
+                    self.TextureSys.updateTextureObj(entity, textureObj, True)
+                
+            self.EM.texturedEntitiesNotPrepared.clear()
+          
+        #Update textureObjects for existing entities
+        if self.TextureSys.updateList:
+            for entity in self.TextureSys.updateList:
+                for textureObj in entity.components["TextureComponent"].textureObjects:
+                    self.TextureSys.updateTextureObj(entity, textureObj, False)
+              
+            self.TextureSys.updateList.clear()
+        
     def render(self):
-        for layer in self.ui.layers:
-            layer.render()
+        pass
+        #Clear the previous frame
+        self.gs.window.fill((0, 0, 0))
+
+        #Render layers
+        for layer in self.RS.layers:
+            self.RS.renderLayer(layer)
+
+        pygame.display.update()
 
         
-
 class MessageGameMode(GameMode):
     def __init__(self, UI):
         self.ui = UI
 
         self.fontSize = 24
         self.font = pygame.font.SysFont('rubik', self.fontSize)
-        self.message = "You suck."
+        self.message = "You suck. - Dan 2021"
 
         self.returnToMenu = False
      

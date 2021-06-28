@@ -1,8 +1,15 @@
 #Import Modules
-import pygame
-from pygame.locals import *
-from pygame.math import Vector2
-
+try:
+    import sys
+    import pygame
+    from pygame.locals import *
+    from pygame.math import Vector2
+    
+except ImportError as er:
+    print("Error loading module")
+    print(er)
+    sys.exit(2)
+    
 #Contains the current game state
 class GameState():
     def __init__(self):
@@ -18,7 +25,7 @@ class GameState():
 
         #FPS
         self.clock = pygame.time.Clock()
-        self.FPS = 30
+        self.FPS = 5
 
         #Game loop condition
         self.running = True
@@ -35,7 +42,7 @@ class GameState():
 
         self.commands = []
 
-        #Contains positions of all ground tiles
+        #Contains positions of all ground tiles, ###Use Tiled for map development
         self.ground = [
             [Vector2(0,0), Vector2(0,0), Vector2(0,0), Vector2(0,0), Vector2(0,0), Vector2(0,0), Vector2(0,0), Vector2(0,0), Vector2(0,0), Vector2(0,0), Vector2(0,0), Vector2(0,0)], 
             [Vector2(0,0), Vector2(0,0), Vector2(0,0), Vector2(0,0), Vector2(0,0), Vector2(0,0), Vector2(0,0), Vector2(0,0), Vector2(0,0), Vector2(0,0), Vector2(0,0), Vector2(0,0)], 

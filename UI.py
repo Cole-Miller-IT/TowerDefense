@@ -7,10 +7,8 @@ try:
     import sys
 
     #My modules
-    from Entity import Entity
-    from GameModes import MenuGameMode, PlayGameMode, MessageGameMode, SettingsGameMode
-    from GameState import GameState
-    import Layers
+    from gamemodes import MenuGameMode, PlayGameMode, MessageGameMode, SettingsGameMode
+    from gamestate import GameState
 
 except ImportError as error:
     print("Couldn't load module.")
@@ -24,13 +22,6 @@ os.environ['SDL_VIDEO_CENTERED'] = '1'
 class UserInterface():
     def __init__(self):
         self.gamestate = GameState()
-
-        #Layers
-        self.layers = [
-            Layers.ArrayLayer('Assets\ground.png', self.gamestate.ground, self.gamestate),
-            Layers.UnitLayer('Assets\\units.png', self.gamestate.units, self.gamestate.window),
-            Layers.HUDLayer('Assets\ground.png', self.gamestate)
-        ]
 
         #Init Pygame
         pygame.init()
@@ -80,18 +71,14 @@ class UserInterface():
             
             elif self.currentGameMode is not None:
                 self.currentGameMode.processInput()
-
-                if self.gamestate.debug == True:
+                try:
                     self.currentGameMode.update()
-
-                else:
-                    try:
-                        self.currentGameMode.update()
-                    except Exception as ex:
-                        print('Error updating the current game mode')
-                        self.currentGameMode = None
-                        self.overlayGameMode = MenuGameMode(UI)
-                        self.activeGameMode = 'Overlay'
+                except Exception as ex:
+                    print('Error updating the current game mode')
+                    print(ex)
+                    self.currentGameMode = None
+                    self.overlayGameMode = MenuGameMode(UI)
+                    self.activeGameMode = 'Overlay'
 
             #Render 
             #Draw a black screen (clear the screen)
