@@ -25,7 +25,7 @@ class GameState():
 
         #FPS
         self.clock = pygame.time.Clock()
-        self.FPS = 5
+        self.FPS = 15       #Having a higher framerate will cause rendering issues when have the game running and an overlay gamemode
 
         #Game loop condition
         self.running = True
@@ -55,7 +55,6 @@ class GameState():
             [Vector2(0,0), Vector2(0,0), Vector2(0,0), Vector2(0,0), Vector2(0,0), Vector2(0,0), Vector2(0,0), Vector2(0,0), Vector2(0,0), Vector2(0,0), Vector2(0,0), Vector2(0,0)], 
             [Vector2(0,0), Vector2(0,0), Vector2(0,0), Vector2(0,0), Vector2(0,0), Vector2(0,0), Vector2(0,0), Vector2(0,0), Vector2(0,0), Vector2(0,0), Vector2(0,0), Vector2(0,0)], 
             ]
-    
 
         #Settings
         self.rebindList = []

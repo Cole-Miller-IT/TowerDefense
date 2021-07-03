@@ -148,6 +148,8 @@ class RenderSystem(System):
             #Draw tile surface to the window surface
             if textureObj.surface is not None and textureObj.Rect is not None:
                 self.window.blit(textureObj.surface, textureObj.Rect)
+            else:
+                print("renderEntity() texture or surface is not given. ID: " + str(entity.ID))
 
     #Render a layer, such as all the ground or units entities
     def renderLayer(self, layer):
@@ -160,11 +162,12 @@ class RenderSystem(System):
         for y in range(int(self.gs.worldSize.y)):
             for x in range(int(self.gs.worldSize.x)):
                 originPoint = positionList[y][x]
-                posX = x * self.gs.cellSize.x
-                posY = y * self.gs.cellSize.y
+                #The position is going to be the tile coordinates eg. (0,0) * how big the cell is + an offset to center it
+                posX = x * self.gs.cellSize.x + (self.gs.cellSize.x / 2)
+                posY = y * self.gs.cellSize.y + (self.gs.cellSize.y / 2)
                 if originPoint is not None:
-                    layer.append(Entity(self.EM, [PositionComponent(posX, posY),
-                                                  SizeComponent(self.gs.cellSize.x, self.gs.cellSize.y), TextureComponent(spritesheet, {"base": Vector2(y, x)}), RenderComponent()]))
+                   layer.append(Entity(self.EM, [PositionComponent(posX, posY),
+                                                 SizeComponent(self.gs.cellSize.x, self.gs.cellSize.y), TextureComponent(spritesheet, {"base": Vector2(originPoint.y, originPoint.x)}), RenderComponent()]))
         return layer
     
     def run(self):

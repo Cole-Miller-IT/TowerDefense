@@ -140,10 +140,11 @@ class PlayGameMode(GameMode):
         
         #Testing variables-----------------------------------------------
         self.counterChange = False
-        #layer = self.RS.create2DLayer(self.gs.ground, "Assets\Ground.png")
-        #self.RS.layers.append(layer)
-        
-        
+        layer = self.RS.create2DLayer(self.gs.ground, "Assets\Ground.png")
+        self.RS.layers.append(layer)
+    
+
+        #Unit
         self.player1 = Entity(self.EM, [PositionComponent(200, 200), TargetComponent(), ShootComponent(), SizeComponent(
             32, 32), TextureComponent("Assets\\Units.png", {"base": Vector2(32, 0), "turret": Vector2(64, 0)}), RenderComponent(), MoveComponent(Vector2(0, 0))])
 
@@ -151,6 +152,7 @@ class PlayGameMode(GameMode):
         unitLayer.append(self.player1)
         self.RS.layers.append(unitLayer)
         
+        #print(self.EM.texturedEntitiesNotPrepared)
         #Observers
         #textureObjEvent = observers.Event()
         #textureObjObserver = observers.textureObserver()
@@ -160,21 +162,30 @@ class PlayGameMode(GameMode):
         for event in pygame.event.get():
             # If the user has clicked on the 'X' box, close the game
             if event.type == pygame.QUIT:
-                self.running = False
+                self.gs.running = False
             # If the user has pressed down on the keyboard, handle the input
             elif event.type == pygame.KEYDOWN:
                 #Move up
                 if event.key == pygame.K_w:
-                    self.player1.components["MoveComponent"].move = Vector2(0, -10)
+                    self.player1.components["PositionComponent"].y = self.player1.components["PositionComponent"].y - 10
+                    self.TextureSys.updateList.append(self.player1)
+                    print(self.player1.components["PositionComponent"].y)
+                    # self.player1.components["MoveComponent"].move = Vector2(0, -10)
+                
                 #Move left
                 elif event.key == pygame.K_a:
                     self.player1.components["MoveComponent"].move = Vector2(-10, 0)
+                
                 #Move down
                 elif event.key == pygame.K_s:
                     self.player1.components["MoveComponent"].move = Vector2(0, 10)
+                
                 #Move right
                 elif event.key == pygame.K_d:
                     self.player1.components["MoveComponent"].move = Vector2(10, 0)
+
+                elif event.key == pygame.K_ESCAPE:
+                    self.UI.showMenu()
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 #Targets the point clicked on and updates textureObject's turret angle
@@ -192,8 +203,11 @@ class PlayGameMode(GameMode):
             
         #Initalize textureObjects for new entities
         if self.EM.texturedEntitiesNotPrepared:
+            #print("True")
             for entity in self.EM.texturedEntitiesNotPrepared:
+                #print("True")
                 for textureObj in entity.components["TextureComponent"].textureObjects:
+                    #print("True")
                     self.TextureSys.updateTextureObj(entity, textureObj, True)
                 
             self.EM.texturedEntitiesNotPrepared.clear()
