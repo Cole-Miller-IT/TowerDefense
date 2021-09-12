@@ -169,20 +169,23 @@ class PlayGameMode(GameMode):
                 if event.key == pygame.K_w:
                     self.player1.components["PositionComponent"].y = self.player1.components["PositionComponent"].y - 10
                     self.TextureSys.updateList.append(self.player1)
-                    print(self.player1.components["PositionComponent"].y)
+                    #print(self.player1.components["PositionComponent"].y)
                     # self.player1.components["MoveComponent"].move = Vector2(0, -10)
                 
                 #Move left
                 elif event.key == pygame.K_a:
-                    self.player1.components["MoveComponent"].move = Vector2(-10, 0)
+                    self.player1.components["PositionComponent"].x = self.player1.components["PositionComponent"].x - 10
+                    self.TextureSys.updateList.append(self.player1)  
                 
                 #Move down
                 elif event.key == pygame.K_s:
-                    self.player1.components["MoveComponent"].move = Vector2(0, 10)
+                    self.player1.components["PositionComponent"].y = self.player1.components["PositionComponent"].y + 10
+                    self.TextureSys.updateList.append(self.player1)
                 
                 #Move right
                 elif event.key == pygame.K_d:
-                    self.player1.components["MoveComponent"].move = Vector2(10, 0)
+                    self.player1.components["PositionComponent"].x = self.player1.components["PositionComponent"].x + 10
+                    self.TextureSys.updateList.append(self.player1)
 
                 elif event.key == pygame.K_ESCAPE:
                     self.UI.showMenu()
